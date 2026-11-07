@@ -25,5 +25,8 @@ def log_experiment(model, chosen, validation, test, metadata_path, model_path, d
                 mlflow.log_metric(f"test_{k}", value)
         mlflow.set_tags({"source":"demo" if demo else "IBM", "statut":"non_deployable" if demo else "evaluation"})
         mlflow.log_artifact(str(metadata_path), artifact_path="metadata")
-        mlflow.sklearn.log_model(sk_model=model, name="churn_pipeline")
+        # MLflow 3.18 sérialise avec skops et refuse les types qu'on ne lui a pas déclarés.
+        # Le pipeline sort de notre propre entraînement : on autorise ces deux types, pas plus.
+        mlflow.sklearn.log_model(sk_model=model, name="churn_pipeline",
+                                 skops_trusted_types=["numpy.dtype", "sklearn.tree._tree.Tree"])
         return run.info.run_id

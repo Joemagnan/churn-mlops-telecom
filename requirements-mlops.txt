@@ -1,4 +1,6 @@
 # Dépendances séparées du serveur de prédiction
 -r requirements-dev.txt
-mlflow>=3.0,<4.0
-evidently>=0.7,<1.0
+# Figées elles aussi : avec « mlflow>=3.0,<4.0 », pip a pris la 3.18, dont le format
+# skops a fait échouer --mlflow (voir src/mlflow_tracking.py).
+mlflow==3.18.0
+evidently==0.7.23
