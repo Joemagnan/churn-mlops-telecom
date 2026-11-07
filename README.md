@@ -44,7 +44,7 @@ La version `1.0.0-demo` ne doit PAS être utilisée pour conclure à une perform
 ```bash
 python -m pytest -q
 ```
-15 tests : schéma des données, absence de fuite de la cible, valeurs manquantes, API (validation des entrées, prédiction, 503 sans modèle, journal sans donnée personnelle, journal inaccessible) et monitoring.
+18 tests : schéma des données, absence de fuite de la cible, valeurs manquantes, API (validation des entrées, prédiction, 503 sans modèle, journal sans donnée personnelle, journal inaccessible), monitoring, et 3 tests de l'extension dérive (lot simulé, sélection des colonnes, colonnes manquantes).
 
 ## Démarrer l'API
 ```bash
@@ -69,11 +69,12 @@ Les artefacts sont générés localement et inclus lors du build ; ne jamais acc
 
 ## CI GitLab
 Le fichier `.gitlab-ci.yml` réalise :
-1. les tests automatiques (`python:3.12-slim`, comme l'image de l'API) ;
-2. un entraînement de démonstration sur données synthétiques ;
-3. sur la branche principale, la construction de l'image puis un test de démarrage (`/health`) dans Docker-in-Docker (runner privilégié nécessaire ; job facultatif).
+1. `unit_tests` : les tests automatiques (`python:3.12-slim`, comme l'image de l'API) ;
+2. `smoke_training` : un entraînement de démonstration sur données synthétiques ;
+3. `drift_smoke` : le rapport Evidently sur une dérive simulée ;
+4. `docker_smoke` : sur la branche principale et à la demande, la construction de l'image puis l'attente de l'état `healthy` dans Docker-in-Docker (runner privilégié nécessaire ; job facultatif).
 
-Les journaux de rejeu local présents dans l’archive initiale témoignent d’exécutions antérieures ; ils ne prouvent pas l’exécution de cette version modifiée sur GitLab.
+Les quatre jobs de cette version ont été rejoués en local le 07/11/2026, chacun dans son image Docker et à partir d'un `git clone` du dépôt : tous passent. Ce rejeu ne remplace pas une exécution sur un vrai runner GitLab.
 **Le CI ne prouve pas qu'un modèle IBM a été entraîné ou déployé en production.** L'image construite dans le job Docker manuel contient le modèle de démonstration. Pour aller plus loin, prévoir un accès aux données approuvé, un registre de modèles, la publication dans un registre de conteneurs, des secrets CI et un environnement cible.
 
 ## Monitoring
@@ -115,6 +116,7 @@ python -m src.train --demo --mlflow
 mlflow server --backend-store-uri sqlite:///mlflow.db --port 5000
 ```
 Consulter `http://127.0.0.1:5000`. Pour l'expérience IBM : `python -m src.download_data` puis `python -m src.train --mlflow`. Les données doivent être correctement obtenues avant entraînement.
+MLflow et Evidently sont figés (3.18.0 et 0.7.23). MLflow 3.18 enregistre les modèles scikit-learn au format skops, qui refuse par défaut certains types internes du pipeline : `src/mlflow_tracking.py` déclare explicitement les deux types concernés.
 
 ### 3. Monitoring de dérive Evidently
 ```bash
