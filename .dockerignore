@@ -7,3 +7,7 @@ data
 reports
 monitoring
 *.docx
+# Le modèle synthétique ne doit jamais finir dans l'image de l'API
+models/demo
+mlflow.db
+mlruns
