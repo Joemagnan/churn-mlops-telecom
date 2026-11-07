@@ -1,0 +1,145 @@
+{
+  "seuils_validation": [
+    {
+      "seuil": 0.3,
+      "precision": 0.42,
+      "recall": 0.9118,
+      "f1": 0.575,
+      "clients_alertes": 812
+    },
+    {
+      "seuil": 0.35,
+      "precision": 0.4319,
+      "recall": 0.8824,
+      "f1": 0.58,
+      "clients_alertes": 764
+    },
+    {
+      "seuil": 0.4,
+      "precision": 0.4589,
+      "recall": 0.8503,
+      "f1": 0.5961,
+      "clients_alertes": 693
+    },
+    {
+      "seuil": 0.45,
+      "precision": 0.4928,
+      "recall": 0.8209,
+      "f1": 0.6158,
+      "clients_alertes": 623
+    },
+    {
+      "seuil": 0.5,
+      "precision": 0.5139,
+      "recall": 0.7888,
+      "f1": 0.6224,
+      "clients_alertes": 574
+    },
+    {
+      "seuil": 0.55,
+      "precision": 0.5376,
+      "recall": 0.746,
+      "f1": 0.6249,
+      "clients_alertes": 519
+    },
+    {
+      "seuil": 0.6,
+      "precision": 0.5644,
+      "recall": 0.7032,
+      "f1": 0.6262,
+      "clients_alertes": 466
+    },
+    {
+      "seuil": 0.65,
+      "precision": 0.5965,
+      "recall": 0.6444,
+      "f1": 0.6195,
+      "clients_alertes": 404
+    },
+    {
+      "seuil": 0.7,
+      "precision": 0.6329,
+      "recall": 0.5856,
+      "f1": 0.6083,
+      "clients_alertes": 346
+    },
+    {
+      "seuil": 0.75,
+      "precision": 0.6796,
+      "recall": 0.516,
+      "f1": 0.5866,
+      "clients_alertes": 284
+    }
+  ],
+  "variables": {
+    "hausse_du_risque": [
+      {
+        "variable": "InternetService_Fiber optic",
+        "poids": 0.717
+      },
+      {
+        "variable": "Contract_Month-to-month",
+        "poids": 0.668
+      },
+      {
+        "variable": "TotalCharges",
+        "poids": 0.472
+      },
+      {
+        "variable": "StreamingMovies_Yes",
+        "poids": 0.283
+      },
+      {
+        "variable": "StreamingTV_Yes",
+        "poids": 0.27
+      },
+      {
+        "variable": "PaymentMethod_Electronic check",
+        "poids": 0.244
+      },
+      {
+        "variable": "OnlineSecurity_No",
+        "poids": 0.205
+      },
+      {
+        "variable": "TechSupport_No",
+        "poids": 0.171
+      }
+    ],
+    "baisse_du_risque": [
+      {
+        "variable": "tenure",
+        "poids": -1.137
+      },
+      {
+        "variable": "Contract_Two year",
+        "poids": -0.779
+      },
+      {
+        "variable": "MonthlyCharges",
+        "poids": -0.677
+      },
+      {
+        "variable": "InternetService_DSL",
+        "poids": -0.619
+      },
+      {
+        "variable": "OnlineSecurity_No internet service",
+        "poids": -0.27
+      },
+      {
+        "variable": "OnlineBackup_No internet service",
+        "poids": -0.27
+      },
+      {
+        "variable": "InternetService_No",
+        "poids": -0.27
+      },
+      {
+        "variable": "DeviceProtection_No internet service",
+        "poids": -0.27
+      }
+    ]
+  },
+  "taux_churn_test": 0.2654
+}

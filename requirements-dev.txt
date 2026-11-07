@@ -1,0 +1,5 @@
+# Outils de développement : tests et figures du rapport (absents de l'image Docker)
+-r requirements.txt
+pytest==9.2.0
+httpx==0.28.1
+matplotlib==3.11.2

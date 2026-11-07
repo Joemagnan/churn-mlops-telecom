@@ -1,0 +1,85 @@
+stages:
+  - test
+  - train
+  - drift
+  - package
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+cache:
+  paths:
+    - .cache/pip/
+
+unit_tests:
+  image: python:3.12-slim
+  stage: test
+  script:
+    - python -m pip install -r requirements-dev.txt
+    - python -m pytest -q
+
+smoke_training:
+  image: python:3.12-slim
+  stage: train
+  script:
+    - python -m pip install -r requirements.txt
+    - python -m src.demo_data
+    - python -m src.train --demo
+  artifacts:
+    paths:
+      - models/demo/
+      - reports/demo/
+      - monitoring/demo/reference.csv
+    expire_in: 7 days
+
+# Vrai rapport Evidently exécuté par runner, sur dérive SIMULÉE.
+drift_smoke:
+  image: python:3.12-slim
+  stage: drift
+  needs:
+    - job: smoke_training
+      artifacts: true
+  script:
+    - python -m pip install -r requirements-mlops.txt
+    - python -m src.drift_demo --reference monitoring/demo/reference.csv
+    - python -m src.drift_report --reference monitoring/demo/reference.csv --current monitoring/demo/current_SIMULE.csv --output reports/data_drift_demo.html
+  artifacts:
+    paths:
+      - reports/data_drift_demo.html
+      - reports/data_drift_demo.summary.json
+    expire_in: 14 days
+
+# Build de preuve sans déploiement ni publication d'un modèle synthétique.
+# Nécessite runner autorisant Docker-in-Docker privilégié (à activer et maîtriser).
+docker_smoke:
+  stage: package
+  image: docker:27-cli
+  services:
+    - name: docker:27-dind
+      alias: docker
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ""
+  needs:
+    - job: smoke_training
+      artifacts: true
+  script:
+    - mkdir -p models
+    - cp models/demo/churn_pipeline.joblib models/churn_pipeline.joblib
+    - cp models/demo/metadata.json models/metadata.json
+    - docker info
+    - docker build -t churn-api:demo-ci .
+    - docker run -d --name api-ci churn-api:demo-ci
+    - |
+      for i in $(seq 1 25); do
+        if docker inspect --format='{{.State.Health.Status}}' api-ci 2>/dev/null | grep -q healthy; then
+          echo 'API saine dans le conteneur de démonstration'; exit 0
+        fi
+        sleep 3
+      done
+      docker logs api-ci
+      exit 1
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+      when: manual
+      allow_failure: true

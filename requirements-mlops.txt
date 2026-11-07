@@ -1,0 +1,4 @@
+# Dépendances séparées du serveur de prédiction
+-r requirements-dev.txt
+mlflow>=3.0,<4.0
+evidently>=0.7,<1.0
