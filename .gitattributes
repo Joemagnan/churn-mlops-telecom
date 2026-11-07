@@ -1,0 +1,4 @@
+# Fins de ligne LF partout : les fichiers sont exécutés dans des conteneurs Linux
+* text=auto eol=lf
+*.png binary
+*.joblib binary
